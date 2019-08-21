@@ -1,0 +1,11 @@
+.DS_Store
+.env
+node_modules
+wow*
+artifact*
+archive*
+fixtures
+main
+main.exe
+seal
+seal.exe
