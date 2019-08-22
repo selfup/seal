@@ -46,16 +46,53 @@ func main() {
 		PollMs:     pollMs,
 	}
 
-	seal.pollDir(seal, currentTime)
+	seal.PollDir(currentTime)
 }
 
-func (s *Seal) pollDir(scnnr Seal, currentTime time.Time) {
-	err := scnnr.Scan()
+// Seal holds cli args
+type Seal struct {
+	Directory  string
+	Found      []string
+	Extensions []string
+	Command    string
+	PollMs     time.Duration
+	Process    *os.Process
+}
+
+// Scan walks the given directory tree
+func (s *Seal) Scan() error {
+	err := filepath.Walk(s.Directory, s.scan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Seal) scan(path string, info os.FileInfo, err error) error {
+	if err != nil {
+		return err
+	}
+
+	if !info.IsDir() {
+		for _, extension := range s.Extensions {
+			if filepath.Ext(path) == extension {
+				s.Found = append(s.Found, path)
+			}
+		}
+	}
+
+	return nil
+}
+
+// PollDir polls given directory and runs given command if files are changed
+func (s *Seal) PollDir(currentTime time.Time) {
+	err := s.Scan()
 	if err != nil {
 		panic(err)
 	}
 
-	for _, file := range scnnr.Found {
+	for _, file := range s.Found {
 		info, err := os.Stat(file)
 		if err != nil {
 			fmt.Println(err)
@@ -102,41 +139,5 @@ func (s *Seal) pollDir(scnnr Seal, currentTime time.Time) {
 
 	time.Sleep(s.PollMs)
 
-	s.pollDir(scnnr, currentTime)
-}
-
-// Seal holds cli args
-type Seal struct {
-	Directory  string
-	Found      []string
-	Extensions []string
-	Command    string
-	PollMs     time.Duration
-	Process    *os.Process
-}
-
-// Scan walks the given directory tree
-func (s *Seal) Scan() error {
-	err := filepath.Walk(s.Directory, s.scan)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Seal) scan(path string, info os.FileInfo, err error) error {
-	if err != nil {
-		return err
-	}
-
-	if !info.IsDir() {
-		for _, extension := range s.Extensions {
-			if filepath.Ext(path) == extension {
-				s.Found = append(s.Found, path)
-			}
-		}
-	}
-
-	return nil
+	s.PollDir(currentTime)
 }
