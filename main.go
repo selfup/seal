@@ -16,20 +16,20 @@ func main() {
 
 	var ext string
 	flag.StringVar(&ext, "ext", "", `REQUIRED
-    a comma delimted list of file extensions to scan
-    if none are given all files will be searched`)
+	a comma delimted list of file extensions to scan
+	if none are given all files will be searched`)
 
 	var cmd string
 	flag.StringVar(&cmd, "cmd", "", `REQUIRED
-    command written as it were to be written in the terminal surrounded in double quotes`)
+	command written as it were to be written in the terminal surrounded in double quotes`)
 
 	var dir string
 	flag.StringVar(&dir, "dir", ".", `OPTIONAL
-    directory where seal will poll`)
+	directory where seal will poll`)
 
 	var poll string
 	flag.StringVar(&poll, "poll", "1000", `OPTIONAL
-   	time spent between directory scans`)
+	time spent between directory scans`)
 
 	flag.Parse()
 
