@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -75,7 +74,7 @@ func (s *Seal) pollDir(scnnr Seal, currentTime time.Time) {
 
 			cmdErr := cmd.Run()
 			if cmdErr != nil {
-				log.Fatal(cmdErr)
+				fmt.Println(cmdErr)
 			}
 
 			currentTime = time.Now()
