@@ -67,15 +67,34 @@ func (s *Seal) pollDir(scnnr Seal, currentTime time.Time) {
 			root := args[0]
 			rest := args[1:]
 
-			cmd := exec.Command(root, rest...)
-			cmd.Stdin = os.Stdin
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
+			if s.Process != nil {
+				fmt.Println("seal: reloading..")
 
-			cmdErr := cmd.Run()
-			if cmdErr != nil {
-				fmt.Println(cmdErr)
+				_, perr := os.FindProcess(s.Process.Pid)
+				if perr == nil {
+					err := s.Process.Kill()
+					if err != nil {
+						panic(err)
+					}
+
+				}
 			}
+
+			go func() {
+				cmd := exec.Command(root, rest...)
+				cmd.Stdin = os.Stdin
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+
+				cmd.Start()
+
+				s.Process = cmd.Process
+
+				cmdErr := cmd.Wait()
+				if cmdErr != nil {
+					fmt.Println(cmdErr)
+				}
+			}()
 
 			currentTime = time.Now()
 		}
@@ -93,6 +112,7 @@ type Seal struct {
 	Extensions []string
 	Command    string
 	PollMs     time.Duration
+	Process    *os.Process
 }
 
 // Scan walks the given directory tree
