@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -51,6 +52,7 @@ func main() {
 
 // Seal holds cli args
 type Seal struct {
+	sync.Mutex
 	Directory  string
 	Found      []string
 	Extensions []string
@@ -118,6 +120,8 @@ func (s *Seal) PollDir(currentTime time.Time) {
 			}
 
 			go func() {
+				s.Lock()
+
 				cmd := exec.Command(root, rest...)
 				cmd.Stdin = os.Stdin
 				cmd.Stdout = os.Stdout
@@ -126,6 +130,8 @@ func (s *Seal) PollDir(currentTime time.Time) {
 				cmd.Start()
 
 				s.Process = cmd.Process
+
+				s.Unlock()
 
 				cmdErr := cmd.Wait()
 				if cmdErr != nil {
