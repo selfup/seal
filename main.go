@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -36,7 +35,7 @@ func main() {
 
 	extensions := strings.Split(ext, ",")
 
-	pollMs, err := strconv.Atoi(poll)
+	pollMs, err := time.ParseDuration(poll + "ms")
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +82,7 @@ func (s *Seal) pollDir(scnnr Seal, currentTime time.Time) {
 		}
 	}
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(s.PollMs)
 
 	s.pollDir(scnnr, currentTime)
 }
@@ -94,7 +93,7 @@ type Seal struct {
 	Found      []string
 	Extensions []string
 	Command    string
-	PollMs     int
+	PollMs     time.Duration
 }
 
 // Scan walks the given directory tree
