@@ -12,9 +12,16 @@ Perfect for spiking scripts!
 seal -ext=".go,.proto" -cmd="go run main.go"
 ```
 
+### Chained Commands
+
+If you want to use a command like: `echo wow | grep ow && ls -lagh` you will need to write the script in a file and tell seal to execute said file.
+
+Example: `seal -ext=".sh" -cmd="./scripts/run.sh"`
+
 ### Overriding defaults
 
 Watched directory: `-dir=`
+
 Polling time in ms: `-poll=`
 
 ```bash
