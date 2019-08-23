@@ -106,21 +106,7 @@ func (s *Seal) PollDir(currentTime time.Time) {
 			root := args[0]
 			rest := args[1:]
 
-			if s.Process != nil {
-				fmt.Println("seal: reloading..")
-
-				_, perr := os.FindProcess(s.Process.Pid)
-				if perr == nil {
-					err := s.Process.Kill()
-					if err != nil {
-						if strings.Contains(err.Error(), "process already finished") {
-							// do nothing this is fine
-						} else {
-							panic(err)
-						}
-					}
-				}
-			}
+			s.reload()
 
 			go func() {
 				s.Lock()
@@ -149,4 +135,22 @@ func (s *Seal) PollDir(currentTime time.Time) {
 	time.Sleep(s.PollMs)
 
 	s.PollDir(currentTime)
+}
+
+func (s *Seal) reload() {
+	if s.Process != nil {
+		fmt.Println("seal: reloading..")
+
+		_, perr := os.FindProcess(s.Process.Pid)
+		if perr == nil {
+			err := s.Process.Kill()
+			if err != nil {
+				if strings.Contains(err.Error(), "process already finished") {
+					// do nothing this is fine
+				} else {
+					panic(err)
+				}
+			}
+		}
+	}
 }
