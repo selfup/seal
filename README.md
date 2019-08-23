@@ -6,6 +6,15 @@ Polls files by default every 1000ms (1sec) and if any file has been updated (sav
 
 Perfect for spiking scripts!
 
+### Install
+
+Currently just supports using go as a package manager/installer:
+
+```
+go get github.com/selfup/seal
+go install github.com/selfup/seal
+```
+
 ### Expected Args
 
 ```bash
