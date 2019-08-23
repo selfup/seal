@@ -113,7 +113,11 @@ func (s *Seal) PollDir(currentTime time.Time) {
 				if perr == nil {
 					err := s.Process.Kill()
 					if err != nil {
-						panic(err)
+						if strings.Contains(err.Error(), "process already finished") {
+							// do nothing this is fine
+						} else {
+							panic(err)
+						}
 					}
 				}
 			}
