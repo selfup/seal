@@ -50,7 +50,7 @@ func main() {
 	seal.PollDir(currentTime)
 }
 
-// Seal holds cli args
+// Seal holds cli args, process info, and a mutex
 type Seal struct {
 	sync.Mutex
 	Directory  string
@@ -115,7 +115,6 @@ func (s *Seal) PollDir(currentTime time.Time) {
 					if err != nil {
 						panic(err)
 					}
-
 				}
 			}
 
